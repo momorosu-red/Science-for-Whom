@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Science Without Borders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Caveat:wght@600&family=Fraunces:opsz,wght,ital@9..144,300,0;9..144,400,0;9..144,500,0;9..144,600,0;9..144,600,1&family=Source+Sans+3:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+  :root{
+    --ink:#053C5E;
+    --ink-soft:#3d6a86;
+    --paper:#D2E8FC;
+    --paper-card:#FFFFFF;
+    --rust:#A31621;
+    --sage:#1F7A8C;
+    --brass:#DB222A;
+    --steel:#053C5E;
+    --slate:#14505C;
+    --wave:#3B7CA6;
+    --dandelion:#F4C430;
+    --line:rgba(5,60,94,0.14);
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:
+      radial-gradient(900px 600px at 20% 0%, rgba(31,122,140,0.06), transparent 60%),
+      radial-gradient(900px 700px at 90% 30%, rgba(163,22,33,0.05), transparent 55%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Source Sans 3', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:var(--rust); }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 32px; }
+
+  /* ---------- HERO ---------- */
+  header.hero{ max-width:1180px; margin:0 auto; padding:100px 32px 40px; position:relative; overflow:hidden; }
+  .hero-watermark{ position:absolute; top:-60px; right:-80px; width:420px; height:420px; opacity:0.06; z-index:-1; pointer-events:none; }
+  @media (max-width:760px){ .hero-watermark{ display:none; } }
+  .masthead{
+    box-shadow:0 8px 20px rgba(5,60,94,0.14);
+    font-family:'Bitter',serif; font-weight:700; font-size:clamp(17px,2vw,21px);
+    letter-spacing:.05em; text-transform:uppercase; color:var(--ink);
+    background:var(--paper-card); border:2px solid var(--ink); border-radius:8px;
+    padding:10px 26px 10px 14px; display:inline-flex; align-items:center; gap:12px;
+    opacity:0; animation:fadeUp .7s ease .1s forwards;
+  }
+  .masthead svg{ width:clamp(26px,2.6vw,32px); height:clamp(26px,2.6vw,32px); flex:none; }
+  h1.title{
+    font-family:'Bitter',serif; font-weight:600; font-size:clamp(40px,6.6vw,78px);
+    line-height:1.0; margin:38px 0 14px; letter-spacing:-0.01em;
+    opacity:0; animation:fadeUp .8s ease .25s forwards;
+  }
+  h1.title em{ font-style:normal; font-weight:600; color:var(--ink); }
+  .handwritten{
+    font-family:'Caveat',cursive; color:var(--rust); font-weight:700; font-size:1.25em;
+    display:inline-block; transform:rotate(-3deg); line-height:1; padding:0 0.12em;
+  }
+  .subtitle{
+    font-family:'Source Sans 3',sans-serif; font-style:normal; font-weight:600; font-size:clamp(18px,2.2vw,24px);
+    color:var(--ink-soft); max-width:620px; margin:0 0 30px;
+    opacity:0; animation:fadeUp .8s ease .4s forwards;
+  }
+  .hero-note{
+    max-width:640px; color:var(--ink-soft); font-size:16px; margin-bottom:34px;
+    opacity:0; animation:fadeUp .8s ease .55s forwards;
+  }
+  .hero-cta{ display:flex; flex-wrap:wrap; gap:14px; opacity:0; animation:fadeUp .8s ease .7s forwards; }
+  .btn{
+    font-family:'Space Mono',monospace; font-size:13px; text-decoration:none;
+    padding:13px 22px; border-radius:2px; display:inline-flex; align-items:center; gap:8px;
+    transition:transform .18s ease, box-shadow .18s ease; cursor:pointer; border:1px solid var(--ink);
+  }
+  .btn:hover{ transform:translateY(-2px); box-shadow:0 10px 24px rgba(5,60,94,0.16); }
+  .btn.primary:hover{ box-shadow:0 10px 26px rgba(244,196,48,0.35); }
+  .btn.primary{ background:var(--ink); color:#FFFFFF; }
+  .btn.ghost{ background:transparent; color:var(--ink); }
+  #aboutBtn:hover{ box-shadow:0 10px 26px rgba(244,196,48,0.45); }
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- FAQ ---------- */
+  .faq-list{
+    max-width:1180px; margin:0 auto; padding:0 32px 0 76px; box-sizing:border-box;
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .faq-item{
+    background:var(--paper-card); border:1px solid var(--line); border-top:3px solid transparent;
+    border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(5,60,94,0.06);
+    transition:box-shadow .2s ease, border-top-color .2s ease;
+  }
+  .faq-item:hover{ box-shadow:0 10px 22px rgba(5,60,94,0.12); border-top-color:var(--dandelion); }
+  .faq-answer strong{ color:var(--rust); font-weight:700; }
+  .faq-answer a{ color:var(--rust); font-weight:600; text-decoration:underline; }
+  .faq-question{
+    width:100%; text-align:left; padding:20px 24px; background:none; border:none; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center; gap:16px;
+    font-family:'Fraunces',serif; font-weight:600; font-size:16.5px; color:var(--ink);
+  }
+  .faq-question .mark{
+    font-family:'Space Mono',monospace; font-size:18px; color:var(--rust); flex:none;
+    transition:transform .2s ease;
+  }
+  .faq-item.open .faq-question .mark{ transform:rotate(45deg); }
+  .faq-answer{ max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .faq-item.open .faq-answer{ max-height:260px; }
+  .faq-answer p{ margin:0; padding:0 24px 22px; color:var(--ink-soft); font-size:15px; line-height:1.65; max-width:640px; }
+
+  /* ---------- SECTION HEAD ---------- */
+  .section-head{ display:flex; align-items:center; gap:18px; margin:0 0 8px; }
+  .section-num{
+    font-family:'Space Mono',monospace; font-weight:700; font-size:20px; color:var(--rust);
+    border:2px solid var(--rust); width:46px; height:46px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .section-title{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(24px,3.2vw,36px); margin:0; }
+  .section-sub{ color:var(--ink-soft); max-width:640px; margin:0 0 30px 44px; }
+
+  /* ---------- MISSION ---------- */
+  section.mission{ padding:20px 32px 70px; }
+  .mission-quote{
+    font-family:'Fraunces',serif; font-style:italic; font-weight:500;
+    font-size:clamp(20px,2.6vw,28px); color:var(--ink); max-width:760px;
+    margin:0 0 40px 44px; line-height:1.4;
+    border-left:3px solid var(--rust); padding:14px 24px;
+    transition:box-shadow .2s ease, background .2s ease;
+  }
+  .mission-quote:hover{ background:var(--paper-card); box-shadow:0 10px 26px rgba(5,60,94,0.14); }
+  .mission-quote span{ display:block; font-family:'Space Mono',monospace; font-style:normal; font-size:12px; color:var(--ink-soft); margin-top:12px; letter-spacing:.04em; }
+  .principles{
+    max-width:1180px; margin:0 auto; padding:0 32px 0 76px;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px;
+    box-sizing:border-box;
+  }
+  .principle{ background:var(--paper-card); border:1px solid var(--line); border-radius:14px; padding:24px 24px 26px; position:relative; transition:box-shadow .2s ease, transform .2s ease, border-top-color .2s ease; text-align:center; box-shadow:0 4px 12px rgba(5,60,94,0.08); border-top:3px solid transparent; }
+  .principle:hover{ box-shadow:0 16px 32px rgba(5,60,94,0.18); transform:translateY(-4px); z-index:1; border-top-color:var(--dandelion); }
+  .principle .num{ font-family:'Space Mono',monospace; font-size:12px; color:var(--rust); margin-bottom:10px; display:block; }
+  .principle p{ margin:0; font-size:15px; color:var(--ink); }
+
+  /* ---------- LEGEND / FILTER ---------- */
+  .legend{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 8px 44px; }
+  .legend button{
+    font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.02em;
+    border:1.5px solid var(--dot); background:var(--paper-card); color:var(--ink);
+    padding:8px 16px 8px 14px; border-radius:999px; cursor:pointer;
+    display:flex; align-items:center; gap:8px;
+    transition:all .18s ease; opacity:.55; box-shadow:0 3px 8px rgba(5,60,94,0.06);
+  }
+  .legend button .sw{ width:10px; height:10px; border-radius:50%; background:var(--dot); }
+  .legend button.on{ opacity:1; box-shadow:0 4px 14px rgba(5,60,94,0.12); border-bottom:2.5px solid var(--dandelion); }
+  .legend-hint{ font-family:'Space Mono',monospace; font-size:11.5px; color:var(--ink-soft); margin:0 0 26px 44px; opacity:.75; }
+
+  /* ---------- BUBBLE STAGE ---------- */
+  .stage-wrap{ position:relative; max-width:1180px; margin:10px auto 10px; padding:0 12px; }
+  #stageSvg{ width:100%; height:auto; display:block; cursor:crosshair; touch-action:none; }
+  .bubble{ transition:opacity .3s ease; }
+  .bubble-base{ stroke:rgba(5,60,94,0.22); stroke-width:1; transition:filter .15s ease, transform .15s ease; transform-box:fill-box; transform-origin:center; }
+  .bubble:hover .bubble-base{ filter:brightness(1.08); transform:scale(1.12); }
+  .bubble text{ font-family:'Source Sans 3',sans-serif; fill:#FFFFFF; pointer-events:none; text-anchor:middle; dominant-baseline:middle; }
+  .anchor-label{ font-family:'Fraunces',serif; font-weight:600; text-anchor:middle; dominant-baseline:middle; fill:var(--ink); letter-spacing:-0.01em; pointer-events:none; }
+  .anchor-tag{ font-family:'Space Mono',monospace; text-anchor:middle; dominant-baseline:middle; font-weight:700; letter-spacing:.14em; text-transform:uppercase; pointer-events:none; opacity:.6; }
+  .anchor-ring{ fill:none; stroke-dasharray:3 6; opacity:.5; }
+
+  /* ---------- MODAL ---------- */
+  .backdrop{
+    position:fixed; inset:0; background:rgba(5,60,94,0.5); backdrop-filter:blur(3px);
+    display:flex; align-items:center; justify-content:center; padding:24px; z-index:50;
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+  }
+  .backdrop.open{ opacity:1; pointer-events:all; }
+  .modal{
+    background:var(--paper-card); max-width:560px; width:100%; border-radius:8px;
+    box-shadow:0 30px 70px rgba(5,60,94,0.35); padding:36px 38px 40px;
+    transform:translateY(16px) scale(.98); opacity:0; transition:transform .3s ease, opacity .3s ease;
+  }
+  .backdrop.open .modal{ transform:translateY(0) scale(1); opacity:1; }
+  .modal-eyebrow{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+  .modal-title{ font-family:'Fraunces',serif; font-weight:600; font-size:27px; margin:8px 0 16px; }
+  .modal-body{ color:var(--ink); font-size:15.5px; }
+  .modal-more{
+    display:inline-flex; align-items:center; gap:6px; margin-top:18px;
+    font-family:'Space Mono',monospace; font-size:12.5px; letter-spacing:.04em;
+    text-decoration:none; padding:10px 18px; border-radius:2px; border:1px solid var(--ink); color:var(--ink);
+    transition:transform .15s ease, background .15s ease, color .15s ease;
+  }
+  .modal-more:hover{ background:var(--ink); color:#FFFFFF; transform:translateY(-1px); }
+  .modal-close{
+    float:right; font-family:'Space Mono',monospace; background:none; border:1px solid var(--ink);
+    color:var(--ink); border-radius:50%; width:32px; height:32px; cursor:pointer; margin-left:12px;
+  }
+  .modal-close:hover{ background:var(--ink); color:#FFFFFF; }
+
+  /* ---------- SOURCES ---------- */
+  section.sources{ padding:90px 32px 30px; }
+  .stat-grid{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:16px;
+    max-width:1180px; margin:0 auto; padding:0 32px 0 76px; box-sizing:border-box;
+  }
+  .stat-card{
+    background:var(--paper-card); padding:30px 28px 26px; border-radius:20px;
+    border:1px solid var(--line); border-top:3px solid transparent; transition:box-shadow .2s ease, transform .2s ease, border-top-color .2s ease;
+    box-shadow:0 5px 14px rgba(5,60,94,0.08);
+  }
+  .stat-card:hover{ box-shadow:0 16px 34px rgba(5,60,94,0.18); transform:translateY(-4px); border-top-color:var(--dandelion); }
+  .stat-tag{
+    display:inline-flex; align-items:center; font-family:'Space Mono',monospace; font-size:10.5px;
+    letter-spacing:.08em; text-transform:uppercase; padding:5px 12px; border-radius:999px;
+    color:#FFFFFF; margin-bottom:16px;
+  }
+  .stat-num{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(32px,4vw,42px); line-height:1; margin:0 0 10px; }
+  .stat-label{ font-size:14.5px; color:var(--ink); margin:0 0 12px; max-width:340px; }
+  .stat-cite{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-soft); opacity:.75; }
+  .stat-cite a{ color:var(--ink-soft); text-decoration:underline; }
+  .stat-cite a:hover{ color:var(--rust); }
+  @media (max-width:520px){ .stat-grid{ grid-template-columns:1fr; } }
+
+  /* ---------- ABOUT US ---------- */
+  section.about{ padding:100px 32px 120px; }
+  .about-box{
+    background:var(--ink); color:#FFFFFF; border-radius:6px; padding:54px 46px;
+    max-width:1180px; margin:0 auto; position:relative; overflow:hidden;
+    box-shadow:0 24px 60px rgba(5,60,94,0.28);
+  }
+  .about-box::after{
+    content:""; position:absolute; right:-60px; top:-60px; width:220px; height:220px;
+    border:1px dashed rgba(255,255,255,0.2); border-radius:50%;
+  }
+  .about-head{ max-width:640px; position:relative; z-index:1; margin-bottom:40px; }
+  .about-head .eyebrow2{ font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--wave); }
+  .about-head h3{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(26px,3.2vw,36px); margin:10px 0 14px; }
+  .about-head p{ color:rgba(255,255,255,0.78); }
+  .team-grid{
+    position:relative; z-index:1; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:1px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.15); border-radius:4px; overflow:hidden;
+  }
+  .team-card{ background:rgba(255,255,255,0.06); padding:26px 24px; }
+  .team-card h4{ font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin:0 0 6px; }
+  .team-card .role{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--wave); margin-bottom:10px; }
+  .team-card p{ font-size:14px; color:rgba(255,255,255,0.75); margin:0; }
+  .about-contact{ position:relative; z-index:1; margin-top:34px; font-family:'Space Mono',monospace; font-size:12.5px; color:rgba(255,255,255,0.6); }
+  .about-contact a{ color:#FFFFFF; }
+
+  footer{ text-align:center; padding:36px 32px 60px; font-family:'Space Mono',monospace; font-size:12px; color:var(--ink-soft); }
+
+  .bg-blobs{ position:fixed; top:-80px; left:-80px; right:-80px; bottom:-80px; z-index:-1; overflow:hidden; pointer-events:none; will-change:transform; }
+  .bg-blob{ position:absolute; border-radius:50%; filter:blur(70px); }
+  .bg-blob.b1{ width:440px; height:440px; background:#1F7A8C; opacity:0.16; top:-120px; left:-100px; animation:bgDrift1 24s ease-in-out infinite; }
+  .bg-blob.b2{ width:380px; height:380px; background:#A31621; opacity:0.13; top:35%; right:-140px; animation:bgDrift2 28s ease-in-out infinite; }
+  .bg-blob.b3{ width:360px; height:360px; background:#3B7CA6; opacity:0.15; bottom:-100px; left:25%; animation:bgDrift3 22s ease-in-out infinite; }
+  .bg-blob.b4{ width:300px; height:300px; background:#14505C; opacity:0.13; top:68%; left:2%; animation:bgDrift4 26s ease-in-out infinite; }
+  .bg-blob.b5{ width:340px; height:340px; background:#1F7A8C; opacity:0.14; top:20%; right:10%; animation:bgDrift5 30s ease-in-out infinite; }
+  .bg-blob.b6{ width:260px; height:260px; background:#1F7A8C; opacity:0.12; bottom:10%; right:20%; animation:bgDrift6 25s ease-in-out infinite; }
+  @keyframes bgDrift1{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(70px,50px) scale(1.15); } }
+  @keyframes bgDrift2{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(-50px,40px) scale(1.1); } }
+  @keyframes bgDrift3{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(45px,-35px) scale(0.92); } }
+  @keyframes bgDrift4{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(-30px,-45px) scale(1.12); } }
+  @keyframes bgDrift5{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(-60px,30px) scale(1.08); } }
+  @keyframes bgDrift6{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(40px,-25px) scale(0.95); } }
+
+  @media (max-width:720px){
+    header.hero{ padding:64px 22px 30px; }
+    .section-sub, .legend, .legend-hint, .mission-quote{ margin-left:0; }
+    .principles, .stat-grid, .faq-list{ padding-left:22px; padding-right:22px; }
+    .about-box{ padding:36px 26px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-blobs" id="bgBlobs">
+  <div class="bg-blob b1"></div>
+  <div class="bg-blob b2"></div>
+  <div class="bg-blob b3"></div>
+  <div class="bg-blob b4"></div>
+  <div class="bg-blob b5"></div>
+  <div class="bg-blob b6"></div>
+</div>
+
+<header class="hero">
+  <svg class="hero-watermark" viewBox="0 0 40 40" fill="none">
+    <path d="M13,20 L18,14 L23,20" stroke="#A31621" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="18" cy="18" r="12" stroke="#053C5E" stroke-width="1"/>
+    <line x1="27" y1="27" x2="35" y2="35" stroke="#053C5E" stroke-width="1.2" stroke-linecap="round"/>
+  </svg>
+  <div class="masthead">
+    <svg viewBox="0 0 40 40" fill="none">
+      <path d="M13,20 L18,14 L23,20" stroke="#A31621" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="18" cy="18" r="12" stroke="#053C5E" stroke-width="2"/>
+      <line x1="27" y1="27" x2="35" y2="35" stroke="#053C5E" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    Science W/out Borders
+  </div>
+  <h1 class="title">Science is <span class="handwritten">not</span> neutral.</h1>
+  <p class="subtitle">Science advanced. Access to the basics didn't.</p>
+  <p class="hero-note">Examining the systems that science and scientists operate within is how we learn to widen access to science and sharpen its ability to meet the world's most urgent needs. This page lays out that case in six parts, drawing on the research and history that shaped both progress and disparities.</p>
+  <div class="hero-cta">
+    <a class="btn primary" href="#stage">Explore the Mind Map</a>
+    <button class="btn ghost" id="aboutBtn" type="button">About Us</button>
+  </div>
+</header>
+
+<section class="mission" id="mission">
+  <div class="wrap">
+    <div class="section-head"><span class="section-num">01</span><h2 class="section-title">Mission</h2></div>
+  </div>
+  <p class="mission-quote">
+    "Everyone has the right ... to share in scientific advancement and its benefits."
+    <span>Article 27, UN Declaration of Human Rights (1948)</span>
+  </p>
+  <div class="principles">
+    <div class="principle"><span class="num">I</span><p>Science and scientists operate within systems of power that maintain the oppressive ideologies they were founded on.</p></div>
+    <div class="principle"><span class="num">II</span><p>Internal and external forces threaten scientific discovery and its impact.</p></div>
+    <div class="principle"><span class="num">III</span><p>Active global crises require the attention and action of the scientific community.</p></div>
+    <div class="principle"><span class="num">IV</span><p>There are skills and paths available to future scientists that can help them make a difference.</p></div>
+  </div>
+</section>
+
+<section id="faq" style="padding-bottom:70px;">
+  <div class="wrap">
+    <div class="section-head"><span class="section-num">02</span><h2 class="section-title">A Few Questions First</h2></div>
+    <p class="section-sub">Before the map — a quick, honest orientation to what this actually is.</p>
+  </div>
+  <div class="faq-list" id="faqList">
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          What is Science Without Borders, actually?
+          <span class="mark">+</span>
+        </button>
+        <div class="faq-answer"><p>A mindmap and growing collection of research examining how power, history, and access shape modern science — built by three McGill science students who wanted a clearer answer to one question: <strong>why doesn't scientific progress reach everyone equally?</strong></p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          Is this anti-science?
+          <span class="mark">+</span>
+        </button>
+        <div class="faq-answer"><p>No — it's <strong>the opposite</strong>. Believing in science means being honest about the systems it operates inside. Naming those systems doesn't undermine science; ignoring them does.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          Who is this actually for?
+          <span class="mark">+</span>
+        </button>
+        <div class="faq-answer"><p>Anyone curious about how science actually works — students, faculty, or just someone who ended up here. No background in global health or science studies required.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          What do you want me to do with this?
+          <span class="mark">+</span>
+        </button>
+        <div class="faq-answer"><p><strong>Explore it.</strong> Click around, follow a source that surprises you, share it if something lands. This isn't a call to guilt anyone — it's an invitation to look at something most of us were never taught to look at.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          Why does this focus so much on disparity — where's the good news?
+          <span class="mark">+</span>
+        </button>
+        <div class="faq-answer"><p>Fair question — check out <a href="#momentum">Signs of Momentum</a> further down the page. The disparities come first here because they're usually the part of the story that gets skipped.</p></div>
+      </div>
+
+    </div>
+</section>
+
+<section id="stage">
+  <div class="wrap">
+    <div class="section-head"><span class="section-num">03</span><h2 class="section-title">The Mind Map</h2></div>
+    <p class="section-sub">Our six clusters present the literature, media, and ideas that motivated the initiative. Click a label to isolate a cluster, or click any bubble to open it.</p>
+    <div class="legend" id="legend"></div>
+    <p class="legend-hint">tip: your cursor stirs the dish. bigger bubbles are the core ideas; smaller ones are the evidence and stories underneath.</p>
+  </div>
+  <div class="stage-wrap">
+    <svg id="stageSvg"></svg>
+  </div>
+</section>
+
+<div class="backdrop" id="backdrop">
+  <div class="modal" id="modal"></div>
+</div>
+
+<section class="sources">
+  <div class="wrap">
+    <div class="section-head"><span class="section-num">04</span><h2 class="section-title">Where Science Stands</h2></div>
+    <p class="section-sub">Today's landscape is the result of decisions made before us. What it becomes next depends on the decisions we make now.</p>
+    <div class="stat-grid">
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#1F7A8C">Science, Defined</span>
+        <p class="stat-num">80%</p>
+        <p class="stat-label">of young people in Western Europe and North America are enrolled in higher education — compared to just 9% in sub-Saharan Africa.</p>
+        <p class="stat-cite">— <a href="https://news.un.org/en/story/2026/05/1167492" target="_blank" rel="noopener">UN News, citing UNESCO, 2026</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#1F7A8C">Science, Defined</span>
+        <p class="stat-num">Art. 27</p>
+        <p class="stat-label">the UN Declaration of Human Rights clause (1948) guaranteeing a right to share in scientific advancement — still unenforced.</p>
+        <p class="stat-cite">— <a href="https://www.un.org/en/about-us/universal-declaration-of-human-rights" target="_blank" rel="noopener">UN Declaration of Human Rights, 1948</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#A31621">Science's Origin Story</span>
+        <p class="stat-num">40 years</p>
+        <p class="stat-label">the US Public Health Service withheld syphilis treatment from 399 Black men in the Tuskegee Study (1932–1972) — continuing 25 years after penicillin became the standard cure.</p>
+        <p class="stat-cite">— <a href="https://www.cdc.gov/tuskegee/index.html" target="_blank" rel="noopener">Tuskegee Study of Untreated Syphilis, CDC</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#A31621">Science's Origin Story</span>
+        <p class="stat-num">1947</p>
+        <p class="stat-label">the year the Nuremberg Code was created in direct response to Nazi human experimentation — establishing informed consent as a research principle for the first time.</p>
+        <p class="stat-cite">— <a href="https://www.hhs.gov/ohrp/regulations-and-policy/historical-links/nuremberg-code/index.html" target="_blank" rel="noopener">The Nuremberg Code, HHS</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#DB222A">The Walled World</span>
+        <p class="stat-num">88.6%</p>
+        <p class="stat-label">of "parachute research" discoveries happen in the Global South — while resident researchers are involved in only 33.3% of them, and credit skews north.</p>
+        <p class="stat-cite">— <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12440618/" target="_blank" rel="noopener">Geopolitical impacts on species discovery, PMC</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#DB222A">The Walled World</span>
+        <p class="stat-num">20%</p>
+        <p class="stat-label">of the world speaks the language that over 90% of natural science is published in.</p>
+        <p class="stat-cite">— <a href="https://www.jbe-platform.com/content/journals/10.1075/aila.20.06ham" target="_blank" rel="noopener">Hamel, 2007</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#DB222A">The Walled World</span>
+        <p class="stat-num">82%</p>
+        <p class="stat-label">of all global R&amp;D spending in 2022 came from just 8 countries — the US (30%) and China (27%) alone account for over half.</p>
+        <p class="stat-cite">— <a href="https://ncses.nsf.gov/pubs/nsb20257/conclusion" target="_blank" rel="noopener">NSF / NCSES, 2022</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#DB222A">The Walled World</span>
+        <p class="stat-num">$8.97B</p>
+        <p class="stat-label">paid globally by scientists — not readers — just to publish open access, across only 6 major publishers between 2019 and 2023.</p>
+        <p class="stat-cite">— <a href="https://arxiv.org/abs/2407.16551" target="_blank" rel="noopener">Butler, Haustein et al., 2024</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#053C5E">Engaging with Science</span>
+        <p class="stat-num">85.6%</p>
+        <p class="stat-label">of participants across a 47-country clinical trial database were White.</p>
+        <p class="stat-cite">— <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10824686/" target="_blank" rel="noopener">Racial and ethnic diversity in global neuroscience clinical trials, PMC</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#053C5E">Engaging with Science</span>
+        <p class="stat-num">&lt;1%</p>
+        <p class="stat-label">of vaccines administered in Africa in 2022 were manufactured there — the other side of the same hoarding.</p>
+        <p class="stat-cite">— <a href="https://www.clintonhealthaccess.org/report/current-and-planned-vaccine-manufacturing/" target="_blank" rel="noopener">Clinton Health Access Initiative</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#14505C">The Polycrisis</span>
+        <p class="stat-num">1.25M</p>
+        <p class="stat-label">deaths from tuberculosis in 2023 — nearly all in low- and middle-income countries, while wealthy nations have been effectively TB-free for decades.</p>
+        <p class="stat-cite">— <a href="https://www.who.int/teams/global-tuberculosis-programme/tb-reports" target="_blank" rel="noopener">WHO Global Tuberculosis Report</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#14505C">The Polycrisis</span>
+        <p class="stat-num">113x</p>
+        <p class="stat-label">more was spent on COVID-19 R&amp;D in just 11 months ($104B) than was spent on TB research in all of 2020 — despite TB being the deadlier infectious disease that year.</p>
+        <p class="stat-cite">— <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8865854/" target="_blank" rel="noopener">Worrying lack of funding for tuberculosis, PMC, 2022</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#14505C">The Polycrisis</span>
+        <p class="stat-num">1.5°C</p>
+        <p class="stat-label">the warming threshold the world passed in 2025 — 3.6 billion people already live in areas highly susceptible to its effects.</p>
+        <p class="stat-cite">— <a href="https://www.who.int/news-room/fact-sheets/detail/climate-change-and-health" target="_blank" rel="noopener">WHO, citing IPCC AR6</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#14505C">The Polycrisis</span>
+        <p class="stat-num">1.27M</p>
+        <p class="stat-label">deaths directly attributable to antimicrobial resistance in 2019 alone — more than malaria or HIV/AIDS.</p>
+        <p class="stat-cite">— <a href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(21)02724-0/fulltext" target="_blank" rel="noopener">The Lancet, GRAM project, 2022</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#3B7CA6">Science With Integrity</span>
+        <p class="stat-num">5,843</p>
+        <p class="stat-label">NIH research grants terminated in 2025 — many for containing words or concepts the administration found objectionable.</p>
+        <p class="stat-cite">— <a href="https://www.27unihted.org/bethesda-declaration-one-year-later" target="_blank" rel="noopener">Bethesda Declaration, One Year Later</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#3B7CA6">Science With Integrity</span>
+        <p class="stat-num">10,000+</p>
+        <p class="stat-label">scientific papers retracted in 2023 — a new annual record integrity researchers call just the visible fraction.</p>
+        <p class="stat-cite">— <a href="https://www.nature.com/articles/d41586-023-03974-8" target="_blank" rel="noopener">Nature, 2023</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#3B7CA6">Science With Integrity</span>
+        <p class="stat-num">10</p>
+        <p class="stat-label">UNESCO principles for the ethical regulation of AI.</p>
+        <p class="stat-cite">— <a href="https://www.unesco.org/en/artificial-intelligence/recommendation-ethics" target="_blank" rel="noopener">UNESCO, Recommendation on the Ethics of AI</a></p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="sources" id="momentum">
+  <div class="wrap">
+    <div class="section-head"><span class="section-num">05</span><h2 class="section-title">Signs of Momentum</h2></div>
+    <p class="section-sub">This page doesn't end on the numbers above — it ends on what's already changing.</p>
+    <div class="stat-grid">
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#F4C430; color:#053C5E">Signs of Momentum</span>
+        <p class="stat-num">$2.2T</p>
+        <p class="stat-label">spent globally on clean energy in 2025 — twice the $1.1T that went to fossil fuels, and the gap keeps widening.</p>
+        <p class="stat-cite">— <a href="https://www.iea.org/reports/world-energy-investment-2025/executive-summary" target="_blank" rel="noopener">IEA, World Energy Investment 2025</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#F4C430; color:#053C5E">Signs of Momentum</span>
+        <p class="stat-num">35M</p>
+        <p class="stat-label">people now work in clean energy worldwide — more than are employed in the fossil fuel industry.</p>
+        <p class="stat-cite">— <a href="https://www.wri.org/insights/state-clean-energy-charted" target="_blank" rel="noopener">World Resources Institute</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#F4C430; color:#053C5E">Signs of Momentum</span>
+        <p class="stat-num">25</p>
+        <p class="stat-label">vaccine manufacturing projects now underway across Africa — up from a handful before the pandemic.</p>
+        <p class="stat-cite">— <a href="https://africacdc.org/news-item/african-vaccine-manufacturing-capacity/" target="_blank" rel="noopener">Africa CDC, CHAI &amp; PATH, 2024</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#F4C430; color:#053C5E">Signs of Momentum</span>
+        <p class="stat-num">$1B</p>
+        <p class="stat-label">committed by Gavi's African Vaccine Manufacturing Accelerator to make African-made vaccines price-competitive within the decade.</p>
+        <p class="stat-cite">— <a href="https://www.gavi.org/our-work/market-shaping/regional-manufacturing-strategy/avma" target="_blank" rel="noopener">Gavi, the Vaccine Alliance, 2024</a></p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#F4C430; color:#053C5E">Signs of Momentum</span>
+        <p class="stat-num">4x</p>
+        <p class="stat-label">the multiplier the IMF now allows: every dollar of idle reserves wealthy countries lend to the African Development Bank turns into four dollars of real development and climate financing.</p>
+        <p class="stat-cite">— <a href="https://www.afdb.org/en/news-and-events/press-releases/african-development-bank-and-interamerican-development-bank-welcome-international-monetary-funds-imf-executive-boards-decision-approving-use-sdrs-hybrid-capital-instruments-70788" target="_blank" rel="noopener">African Development Bank, 2024</a></p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="about">
+  <div class="about-box">
+    <div class="about-head">
+      <div class="eyebrow2">About Us</div>
+      <p>We built Science Without Borders because our own undergraduate science education trained us to pipette, model, and analyze — but never asked us why the diseases we studied were distributed the way they were, or whose interests our research would serve.</p>
+    </div>
+    <p class="about-contact">Get in touch — <a href="mailto:monica.rosu@mail.mcgill.ca">monica.rosu@mail.mcgill.ca</a></p>
+  </div>
+</section>
+
+<footer>Science Without Borders © 2026</footer>
+
+<script>
+const GROUPS = [
+  { id:'define',   name:'Science, Defined',            color:'#1F7A8C' },
+  { id:'legacy',    name:"Science's Origin Story",           color:'#A31621' },
+  { id:'barriers',  name:'The Walled World',   color:'#DB222A' },
+  { id:'engage',    name:'Engaging with Science',       color:'#053C5E' },
+  { id:'crisis',    name:'The Polycrisis',              color:'#14505C' },
+  { id:'responsible', name:'Science With Integrity', color:'#3B7CA6' },
+];
+
+const LEAVES = [
+  // DEFINING SCIENCE
+  { id:'d1', group:'define', r:54, label:'What Is Science?', summary:"The pursuit and application of knowledge through systematic, evidence-based methodology — but who practices it, who funds it, is the real question.",
+    body:"The Science Council defines science as the pursuit and application of knowledge and understanding of the natural and social world, following a systematic methodology based on evidence. That definition doesn't settle much on its own — it just opens the real questions: who practices it, what motivates it, who funds it, and whether it's neutral at all.", media:[] },
+  { id:'d2', group:'define', r:34, label:'Is Science Neutral?', summary:"Science is trusted as a tool for the public good — which is exactly why its neutrality has to be examined, not assumed.",
+    body:"Science is funded and trusted to serve the public good, and scientists hold a uniquely powerful role in that process. Trust of that scale is precisely what makes the assumption of neutrality worth interrogating rather than taking for granted.", media:[] },
+  { id:'d3', group:'define', r:36, label:'The Right to Science', summary:"Article 27 of the UN Declaration of Human Rights (1948) enshrined the right to share in scientific advancement.",
+    body:"\"Everyone has the right ... to share in scientific advancement and its benefits.\" In practice, enforcement is weak, and access to that right remains deeply uneven — not all people participate in generating scientific knowledge, and not all people benefit from it. As Madhukar Pai and Seye Abimbola put it: science must not treat communities as passive recipients of charity — the same right to benefit applies whether or not a country did the discovering.", media:[
+      { type:'article', url:'https://www.science.org/doi/10.1126/science.ads2151', title:'Science should save all, not just some', author:'Pai & Abimbola', year:'2024' }
+    ] },
+  { id:'d4', group:'define', r:30, label:'Positionality', summary:"An individual's worldview shapes their research — whether they name it or not.",
+    body:"Positionality is the way an individual's worldview — and therefore their perceptions and research activities — is shaped by the frameworks and sociopolitical context within which they live (Secules et al., 2020).", media:[] },
+  { id:'d5', group:'define', r:28, label:'Privileged Access', summary:"Science students sit among the people with the highest access to knowledge in the world.",
+    body:"At McGill alone, students have access to 1,541 databases of online knowledge. With the ability to access and understand information at that scale comes real power — and a duty to wield it in ways that benefit the public, not just careers.", media:[] },
+
+  // LEGACY OF SCIENCE
+  { id:'l1', group:'legacy', r:54, label:'Never Neutral', summary:"From the start, science has been an extension of colonialism.",
+    body:"Colonialism: acquiring political control over another country, occupying it with settlers, and exploiting it economically. Coloniality: the enduring structures of power that outlasted formal colonial rule. Science was repeatedly built to serve — and justify — both.", media:[] },
+  { id:'l2', group:'legacy', r:36, label:'Born From Eugenics', summary:"Some of the field's founding tools were built to prove racial hierarchy.",
+    body:"Francis Galton, a \"founding father\" of statistics, imagined separate bell curves for different races. Karl Pearson, \"founding father of biometrics,\" used statistics to give eugenics the appearance of mathematical fact, framing war against \"inferior races\" as a logical implication of evolution. Ronald Fisher supported the sterilization of the \"feeble-minded.\" The eugenics movement laid real groundwork for modern genetics.", media:[] },
+  { id:'l3', group:'legacy', r:32, label:'The First Epidemiologists', summary:"Many surveillance tools were developed studying enslaved people.",
+    body:"Tools now used to control pandemics — observation, surveillance, data collection — were developed by physicians aboard slave ships and in colonial regimes, who \"studied\" disease progression among enslaved Africans held in deliberately crowded, unsanitary conditions.", media:[] },
+  { id:'l4', group:'legacy', r:32, label:'Epistemic Injustice', summary:"When people are wronged specifically as knowers.",
+    body:"Testimonial injustice dismisses someone's credibility due to bias. Hermeneutical injustice denies them the frameworks to interpret their own experience. Epistemicide is the intentional destruction of an entire knowledge system — as happened to Indigenous knowledge systems in Canada.", media:[] },
+  { id:'l5', group:'legacy', r:28, label:'Global North / Global South', summary:"Even our vocabulary for inequality is colonially constructed.",
+    body:"\"First World / Third World\" and \"Developed / Developing\" imply that some countries are simply ahead and others behind — a racial hierarchy in disguise. \"Global North / South\" at least names a division of wealth and power, rather than of worth.", media:[] },
+
+  // BARRIERS TO PARTICIPATION
+  { id:'b1', group:'barriers', r:54, label:'Colonial Barriers', summary:"Infrastructure, geopolitics, money, language, and violence all still gate participation in science.",
+    body:"These barriers aren't incidental — they're sustained by the same colonial structures that produced today's distribution of scientific capital and infrastructure.", media:[] },
+  { id:'b2', group:'barriers', r:32, label:'Infrastructure', summary:"85% of the world's population, 50–80% of the infrastructure access.",
+    body:"Despite hosting 85% of the global population, Global South countries have only 50–80% of the infrastructure access, while experiencing 9–44% higher inequalities compared with the Global North (Tu et al., 2025).", media:[] },
+  { id:'b3', group:'barriers', r:32, label:'Visas & Politics', summary:"Visa bans don't just upend careers — they restrict who reaches funded institutions.",
+    body:"\"The visa bans and delays promise not only to upend the careers of international students but also to cause drastic economic impacts to the United States\" (Gewin). Political interference compounds this — recent executive actions gave political appointees authority over nearly $200 billion in US science funding (Garisto et al., 2025).", media:[] },
+  { id:'b4', group:'barriers', r:30, label:'Financial', summary:"Grants mostly go to those who've already published in high-impact journals.",
+    body:"\"Grants are mostly awarded to those who have already published in high-impact journals\" (Petersen). Unpaid internships, self-funded conferences, and underpaid postdoc positions disproportionately exclude those without generational wealth (McClain, 2025).", media:[] },
+  { id:'b5', group:'barriers', r:28, label:'Language', summary:"Over 90% of science is published in a language 20% of the world speaks.",
+    body:"More than 75% of articles in the social sciences and over 90% in the natural sciences are written in English (Hamel, 2007) — costing the field diversity of thought and overlooking critical data from non-English speakers.", media:[] },
+  { id:'b6', group:'barriers', r:24, label:'Violence & Conflict', summary:"It's hard to publish a paper from a warzone.",
+    body:"Destruction and conflict remove the basic conditions — safety, infrastructure, continuity — that research depends on, and are rarely counted among the standard \"barriers to science.\"", media:[] },
+
+  // ENGAGING WITH SCIENCE
+  { id:'e1', group:'engage', r:54, label:'Where Science Happens', summary:"Prestige, funding, patents, and publish-or-perish all concentrate in the Global North.",
+    body:"Publishing, patents, R&D spending, and academic prestige remain concentrated in high-income countries — shaping which questions get pursued and who gets credit for answering them.", media:[] },
+  { id:'e2', group:'engage', r:32, label:'Publish or Perish', summary:"99% of first authorships are concentrated in the Global North.",
+    body:"\"Publishing in prestigious journals is still thought to be the most important element in determining whether researchers gain funding, jobs and promotions\" (Leyser, 2014) — so scientists work within a system built on the Global North even when their goal is to change it.", media:[] },
+  { id:'e3', group:'engage', r:30, label:'Patents & Funding', summary:"Intellectual property is just as concentrated as publishing.",
+    body:"Patents and R&D spending as a share of GDP cluster in the same handful of wealthy countries — leaving drug discovery for diseases endemic to the Global South chronically underfunded, since development still tracks profit.", media:[] },
+  { id:'e4', group:'engage', r:32, label:'Vaccine Nationalism', summary:"Countries invest in themselves first, and hoard the rest.",
+    body:"Wealthy nations secured hundreds of millions of vaccine doses per capita while opposing the TRIPS waiver — a resistance shaped by older instruments like the Patent Cooperation Treaty — leaving countries dependent on charity-model access without local manufacturing or supply. There was a designed fix: COVAX, a $12 billion program built so every country, rich or poor, could get equitable vaccine access — funded by requiring wealthy nations to buy at least some of their own supply through it. Instead, those same countries struck separate bilateral deals for early, exclusive doses, starving COVAX of both the vaccines and the revenue it needed to work. In 2024, Health Canada ordered provinces to destroy remaining COVID-19 vaccine stock to make room for a newer formulation — while less than half the eligible population in the countries hit hardest by the pandemic had received a single dose. This isn't a resource problem. It's a reactive, nationalistic pattern: protect capital and citizens first, treat everyone else's crisis as someone else's problem.", media:[
+      { type:'declaration', url:'https://www.wipo.int/treaties/en/registration/pct/', title:'Patent Cooperation Treaty', author:'WIPO' },
+      { type:'article', url:'https://www.foreignaffairs.com/africa/roots-global-souths-new-resentment', title:'The Roots of the Global South\'s New Resentment', author:'Mark Suzman', year:'2023' },
+      { type:'article', url:'https://www.cbc.ca/amp/1.7313045', title:'Provinces told to pull existing COVID-19 vaccines ahead of arrival of updated shots', author:'CBC News', year:'2024' }
+    ] },
+  { id:'e5', group:'engage', r:30, label:'Training the Machine', summary:"LLMs trained on majority-English data miss the populations they under-represent.",
+    body:"\"If data is not representative of a given population, then the outcome of the decision system for that subpopulation may not be trustworthy\" — and light skin tone is overrepresented in 3 of 4 medical textbooks (Louie & Wilkes, 2018), a bias that compounds when that data trains medical AI (Cross et al., 2024).", media:[] },
+  { id:'e6', group:'engage', r:28, label:'White Saviorism', summary:"85% of global health organizations are headquartered in Europe and North America.",
+    body:"Global health research is often conducted by the Global North, about the Global South — leaving the benefits of publication somewhere far from the communities the research actually studies (Banerjee et al., 2023).", media:[] },
+
+  // THE POLYCRISIS
+  { id:'c1', group:'crisis', r:54, label:'Compounding Crises', summary:"AI, climate, AMR, pandemics, and disinformation aren't separate problems.",
+    body:"Climate change, antimicrobial resistance, mental health, renewable energy, infrastructure collapse, and disinformation compound each other rather than sitting in isolation — a polycrisis that demands scientists trained to see the connections, not just the disciplines. The ideal model of knowledge translation runs cleanly from science to evidence to policy to practice to real health impact. In reality, each of those steps is its own gap — a place where good research quietly stalls, gets diluted, or never arrives at all.", media:[] },
+  { id:'c2', group:'crisis', r:32, label:'Tuberculosis', summary:"Still the world's deadliest infectious disease — despite an existing vaccine and cure.",
+    body:"Mycobacterium tuberculosis caused 1.25 million deaths in 2023, despite the existence of both a BCG vaccine and an effective antibiotic regimen. The same treatments produce very different outcomes depending on the region. TB is part of what researchers call a syndemic — diseases and social conditions that compound each other rather than acting in isolation, the same lens used to explain COVID-19's uneven toll.", media:[
+      { type:'article', url:'https://www.scientificamerican.com/article/how-covid-inequality-and-politics-make-a-vicious-syndemic1/', title:'How COVID, Inequality and Politics Make a Vicious Syndemic', author:'Mendenhall & Gravlee', year:'2021' }
+    ] },
+  { id:'c3', group:'crisis', r:30, label:'GSK, Shingrix & TB', summary:"A vaccine for TB or for shingles? GSK chose the wealthier market.",
+    body:"GSK paused TB vaccine development to prioritize Shingrix, a shingles vaccine aimed largely at wealthy-country markets — both relying on a shared component over which GSK held IP and supply-chain control. TB vaccine progress only resumed after NGO investment stepped in.", media:[] },
+  { id:'c4', group:'crisis', r:28, label:'One Health & AMR', summary:"Human health is intimately linked to the health of the environment we alter.",
+    body:"Climate change and antimicrobial resistance intersect and compound one another as humans reshape the landscape — a relationship that will only intensify (van Bavel et al., 2024).", media:[] },
+  { id:'c5', group:'crisis', r:30, label:'The Climate Crisis', summary:"Warming 10x faster than natural rates; 1.5°C already passed in 2025.",
+    body:"3.6 billion people live in areas highly susceptible to climate change, and its impacts land unevenly — those who contributed least to the crisis are often hit hardest by it.", media:[] },
+  { id:'c6', group:'crisis', r:26, label:'Sustainable Systems', summary:"Food, water, and energy systems all need redesigning, fast.",
+    body:"An estimated 670 million people may face hunger by 2030 due to extreme weather. There's no long-term scenario where continued fossil fuel growth is compatible with the targets we need to hit.", media:[] },
+
+  // RESPONSIBLE SCIENCE & ROLES
+  { id:'r1', group:'responsible', r:54, label:'Sustainable Futures', summary:"Collaboration, critical allyship, critical thinking, ethics, and sustainability all belong in the definition of good science.",
+    body:"With public trust comes a duty to design science justly — for the people who will actually be impacted by it, not just the people funding or publishing it.", media:[] },
+  { id:'r2', group:'responsible', r:32, label:'Thinking & Reflexivity', summary:"Reasoned judgment turned outward on evidence — and inward on the researcher.",
+    body:"Critical thinking is the systematic evaluation of evidence to form reasoned judgments, and it's core to scientific practice (Dowd et al., 2018). Reflexivity is that same scrutiny turned back on the researcher's own influence over what they're studying.", media:[] },
+  { id:'r3', group:'responsible', r:30, label:'Data Integrity', summary:"P-hacking and selective reporting remain live risks under publish-or-perish pressure.",
+    body:"Stopping data collection once p<0.05, reporting only the measures that clear that bar, or transforming data until it does — these practices persist under the pressure of prestige, and protecting against them is every scientist's responsibility, not just an editor's (Kearns & Roth).", media:[] },
+  { id:'r4', group:'responsible', r:30, label:'AI & Gene Editing', summary:"Ethical frameworks exist — the harder question is enforcement.",
+    body:"UNESCO's ethical AI principles cover privacy, accountability, and fairness. Gene editing raises its own questions of safety and consent — as in He Jiankui's imprisonment for editing embryos to resist HIV before those questions were settled.", media:[] },
+  { id:'r5', group:'responsible', r:32, label:'Data Sovereignty', summary:"OCAP®: Ownership, Control, Access, Possession.",
+    body:"Decolonizing science means giving knowledge systems outside the colonial framework equal standing, not just inclusion. OCAP® — developed by the First Nations Information Governance Centre and used by groups like McGill's D2R — lets communities reclaim authority over their own data instead of being subject to \"parachute research.\" The same logic applies beyond data: biopiracy describes when genetic resources and traditional knowledge are patented for profit without consent or compensation — exactly the pattern OCAP-style frameworks are built to prevent.", media:[
+      { type:'article', url:'https://www.sciencedirect.com/science/article/pii/S0048733322001950', title:'Biopiracy: Crying wolf or a lever for equity and conservation?' }
+    ] },
+  { id:'r6', group:'responsible', r:32, label:'Roles of a Scientist', summary:"Communicator, advocate, and diplomat are scientific roles too.",
+    body:"Being a scientist today also means being an advocate, an innovator, and a changemaker. Translating data for real audiences, engaging policymakers and the public directly, and building the partnerships that turn research into policy aren't distractions from \"real\" science — they're part of what makes science actually reach the people it's meant to serve.", media:[
+      { type:'article', url:'https://doi.org/10.1186/s12889-019-7884-9', title:'The coin model of privilege and critical allyship', author:'Nixon', year:'2019' }
+    ] },
+  { id:'r7', group:'responsible', r:28, label:'Infowars', summary:"Misinformation gets facts wrong. Disinformation gets them wrong on purpose.",
+    body:"\"It's an organized, well-financed, politically motivated campaign that's meant to tear down the fabric of science\" (Peter Hotez). Information flooding, conspiracy framing, synthetic media, and political denial all spread faster than most scientists are trained to counter.", media:[] },
+  { id:'r8', group:'responsible', r:30, label:'Global Citizenship', summary:"Being a global citizen isn't about a passport or a title — it's a mindset.",
+    body:"Global citizenship means recognizing yourself as part of overlapping communities that stretch beyond any one nation — not a single actor in an isolated society — and acting for the benefit of all of them, not just your own. UNESCO frames this as a mindset and set of everyday actions, not a status: no special passport required, no travel or second language needed — just a willingness to see problems, and people, as connected.", media:[
+      { type:'article', url:'https://www.unesco.org/en/global-citizenship-peace-education/need-know', title:'Global citizenship education: what you need to know', author:'UNESCO' }
+    ] },
+];
+
+const W = 1000, H = 1320;
+const DISH_R = 170;
+const CENTERS = {
+  define:      { x:250, y:230 },
+  legacy:      { x:750, y:230 },
+  barriers:    { x:250, y:650 },
+  engage:      { x:750, y:650 },
+  crisis:      { x:250, y:1070 },
+  responsible: { x:750, y:1070 },
+};
+
+LEAVES.forEach(d=>{
+  d.r = d.r * 1.18;
+  const c = CENTERS[d.group];
+  d.x = c.x + (Math.random()-0.5)*50;
+  d.y = c.y + (Math.random()-0.5)*50;
+  d.phase = Math.random()*Math.PI*2;
+});
+
+const svg = d3.select('#stageSvg').attr('viewBox', `0 0 ${W} ${H}`);
+const defs = svg.append('defs');
+
+GROUPS.forEach((g, i)=>{
+  const c = CENTERS[g.id];
+  const gradId = 'dish-'+g.id;
+  const grad = defs.append('radialGradient').attr('id',gradId).attr('cx','50%').attr('cy','42%').attr('r','68%');
+  grad.append('stop').attr('offset','0%').attr('stop-color', g.color).attr('stop-opacity',0.02);
+  grad.append('stop').attr('offset','72%').attr('stop-color', g.color).attr('stop-opacity',0.05);
+  grad.append('stop').attr('offset','100%').attr('stop-color', g.color).attr('stop-opacity',0.17);
+
+  svg.append('circle').attr('class','dish-fill')
+    .attr('cx', c.x).attr('cy', c.y).attr('r', DISH_R)
+    .attr('fill', 'url(#'+gradId+')');
+  svg.append('circle').attr('class','dish-rim-shadow')
+    .attr('cx', c.x).attr('cy', c.y).attr('r', DISH_R-4)
+    .attr('fill','none').attr('stroke','rgba(5,60,94,0.10)').attr('stroke-width',7);
+  svg.append('circle').attr('class','anchor-ring')
+    .attr('cx', c.x).attr('cy', c.y).attr('r', DISH_R)
+    .attr('stroke', g.color);
+  svg.append('text').attr('class','anchor-label')
+    .attr('x', c.x).attr('y', c.y - DISH_R - 18)
+    .attr('fill', g.color)
+    .style('font-size','22px')
+    .text(g.name);
+});
+
+const bubbleLayer = svg.append('g');
+
+const node = bubbleLayer.selectAll('g.bubble')
+  .data(LEAVES)
+  .join('g')
+  .attr('class','bubble')
+  .style('cursor','pointer')
+  .on('click', (event, d)=> openModal(d))
+  .on('mouseenter', (event, d)=>{ d.fx = d.x; d.fy = d.y; d.vx = 0; d.vy = 0; })
+  .on('mouseleave', (event, d)=>{ d.fx = null; d.fy = null; })
+  .on('touchstart', (event, d)=>{ d.fx = d.x; d.fy = d.y; d.vx = 0; d.vy = 0; });
+
+node.append('circle')
+  .attr('class','bubble-base')
+  .attr('r', d=>d.r)
+  .attr('fill', d=> GROUPS.find(g=>g.id===d.group).color);
+
+node.append('text')
+  .attr('dy','0.05em')
+  .style('font-size', d=> Math.max(10.5, d.r*0.27)+'px')
+  .style('font-weight', 600)
+  .each(function(d){
+    const words = d.label.split(' ');
+    const el = d3.select(this);
+    if(words.length > 1){
+      const mid = Math.ceil(words.length/2);
+      el.append('tspan').attr('x',0).attr('dy','-0.5em').text(words.slice(0,mid).join(' '));
+      el.append('tspan').attr('x',0).attr('dy','1.1em').text(words.slice(mid).join(' '));
+    } else {
+      el.text(d.label);
+    }
+  });
+
+let pointer = { x:-9999, y:-9999, active:false };
+
+function pointerForce(alpha){
+  if(!pointer.active) return;
+  LEAVES.forEach(d=>{
+    if(d.fx != null) return;
+    const dx = d.x - pointer.x, dy = d.y - pointer.y;
+    const dist = Math.hypot(dx,dy) || 1;
+    const R = 80;
+    if(dist < R){
+      const f = (R-dist)/R * alpha * 7;
+      d.vx = (d.vx||0) + dx/dist*f;
+      d.vy = (d.vy||0) + dy/dist*f;
+    }
+  });
+}
+
+const simulation = d3.forceSimulation(LEAVES)
+  .force('x', d3.forceX(d=>CENTERS[d.group].x).strength(0.05))
+  .force('y', d3.forceY(d=>CENTERS[d.group].y).strength(0.05))
+  .force('collide', d3.forceCollide(d=>d.r+3).iterations(2))
+  .force('pointer', pointerForce)
+  .alphaDecay(0)
+  .alphaTarget(0.04)
+  .velocityDecay(0.35)
+  .on('tick', ticked);
+
+function ticked(){
+  LEAVES.forEach(d=>{
+    if(d.fx == null){
+      d.vx = (d.vx||0) + Math.sin(Date.now()*0.0006 + d.phase)*0.02;
+      d.vy = (d.vy||0) + Math.cos(Date.now()*0.0005 + d.phase)*0.02;
+      d.x = Math.max(d.r+4, Math.min(W-d.r-4, d.x));
+      d.y = Math.max(d.r+4, Math.min(H-d.r-4, d.y));
+    }
+  });
+  node.attr('transform', d=>`translate(${d.x},${d.y})`);
+}
+
+function getSvgPoint(evt){
+  const rect = document.getElementById('stageSvg').getBoundingClientRect();
+  const scaleX = W/rect.width, scaleY = H/rect.height;
+  const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+  const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+  return { x:(clientX-rect.left)*scaleX, y:(clientY-rect.top)*scaleY };
+}
+document.getElementById('stageSvg').addEventListener('mousemove', e=>{
+  const p = getSvgPoint(e); pointer.x=p.x; pointer.y=p.y; pointer.active=true;
+});
+document.getElementById('stageSvg').addEventListener('mouseleave', ()=>{ pointer.active=false; });
+document.getElementById('stageSvg').addEventListener('touchmove', e=>{
+  const p = getSvgPoint(e); pointer.x=p.x; pointer.y=p.y; pointer.active=true;
+}, {passive:true});
+
+const legend = document.getElementById('legend');
+let activeGroup = null;
+GROUPS.forEach(g=>{
+  const b = document.createElement('button');
+  b.style.setProperty('--dot', g.color);
+  b.innerHTML = `<span class="sw"></span>${g.name}`;
+  b.addEventListener('click', ()=>{
+    activeGroup = activeGroup === g.id ? null : g.id;
+    refreshLegend();
+    applyFilter();
+  });
+  b.dataset.id = g.id;
+  legend.appendChild(b);
+});
+function refreshLegend(){
+  legend.querySelectorAll('button').forEach(b=> b.classList.toggle('on', activeGroup===null || b.dataset.id===activeGroup));
+}
+function applyFilter(){
+  node.style('opacity', d=> (activeGroup===null || d.group===activeGroup) ? 1 : 0.12);
+}
+refreshLegend();
+
+const backdrop = document.getElementById('backdrop');
+const modal = document.getElementById('modal');
+function openModal(d){
+  const g = GROUPS.find(g=>g.id===d.group);
+  modal.innerHTML = `
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-eyebrow" style="color:${g.color}">${g.name}</div>
+    <h3 class="modal-title">${d.label}</h3>
+    <p class="modal-body"><em>${d.summary}</em></p>
+    <p class="modal-body">${d.body}</p>
+    <a class="modal-more" href="media.html?id=${d.id}" target="_blank" rel="noopener">Read, watch, learn more →</a>
+  `;
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  backdrop.classList.add('open');
+}
+function closeModal(){ backdrop.classList.remove('open'); }
+
+document.getElementById('aboutBtn').addEventListener('click', ()=>{
+  modal.innerHTML = `
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-eyebrow" style="color:${'#053C5E'}">About Us</div>
+    <h3 class="modal-title">Science Without Borders</h3>
+    <p class="modal-body">We built Science Without Borders because our own undergraduate science education trained us to pipette, model, and analyze — but never asked us why the diseases we studied were distributed the way they were, or whose interests our research would serve.</p>
+    <p class="modal-body">Get in touch — <a href="mailto:monica.rosu@mail.mcgill.ca">monica.rosu@mail.mcgill.ca</a></p>
+  `;
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  backdrop.classList.add('open');
+});
+backdrop.addEventListener('click', e=>{ if(e.target===backdrop) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+document.querySelectorAll('.faq-item .faq-question').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    btn.parentElement.classList.toggle('open');
+  });
+});
+
+const bgBlobs = document.getElementById('bgBlobs');
+window.addEventListener('scroll', ()=>{
+  const y = Math.min(60, window.scrollY * 0.04);
+  bgBlobs.style.transform = 'translateY(' + y + 'px)';
+}, { passive:true });
+</script>
+
+</body>
+</html>
